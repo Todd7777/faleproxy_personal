@@ -7,6 +7,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const contentDisplay = document.getElementById('content-display');
     const originalUrlElement = document.getElementById('original-url');
     const pageTitleElement = document.getElementById('page-title');
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = themeToggle.querySelector('i');
+
+    // Check for saved theme preference or use preferred color scheme
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.body.classList.add('dark-mode');
+        themeIcon.classList.replace('fa-moon', 'fa-sun');
+    }
+
+    // Theme toggle functionality
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        
+        // Update icon
+        if (document.body.classList.contains('dark-mode')) {
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            themeIcon.classList.replace('fa-sun', 'fa-moon');
+            localStorage.setItem('theme', 'light');
+        }
+    });
 
     urlForm.addEventListener('submit', async (e) => {
         e.preventDefault();
