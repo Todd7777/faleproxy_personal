@@ -1,15 +1,10 @@
-name: Faleproxy CI/CD
+name: Faleproxy CI
 
 on:
   push:
     branches: [ main, master, feature/** ]
   pull_request:
     branches: [ main, master ]
-
-env:
-  VERCEL_TOKEN: 7qKvvY2icxylxWOG6SZAtEME
-  VERCEL_ORG_ID: todds-projects-d1dca245
-  VERCEL_PROJECT_ID: prj_B9dtqAkOLZ65JYga60K1rTm3H1Ep
 
 jobs:
   test:
@@ -39,43 +34,3 @@ jobs:
       with:
         name: coverage-report
         path: coverage/
-        
-  preview-deploy:
-    needs: test
-    if: success() && startsWith(github.ref, 'refs/heads/feature/')
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18.x'
-        
-    - name: Install Vercel CLI
-      run: npm install --global vercel@latest
-      
-    - name: Deploy to Vercel (Preview)
-      run: |
-        vercel deploy --token=$VERCEL_TOKEN --scope=$VERCEL_ORG_ID --confirm
-        
-  production-deploy:
-    needs: test
-    if: success() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18.x'
-        
-    - name: Install Vercel CLI
-      run: npm install --global vercel@latest
-      
-    - name: Deploy to Vercel (Production)
-      run: |
-        vercel deploy --token=$VERCEL_TOKEN --scope=$VERCEL_ORG_ID --prod --confirm

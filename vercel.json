@@ -14,8 +14,7 @@
   ],
   "github": {
     "enabled": true,
-    "silent": false
-  },
-  "projectId": "prj_B9dtqAkOLZ65JYga60K1rTm3H1Ep",
-  "orgId": "todds-projects-d1dca245"
+    "silent": false,
+    "autoAlias": true
+  }
 }
