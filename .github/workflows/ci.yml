@@ -9,7 +9,7 @@ on:
 env:
   VERCEL_TOKEN: 7qKvvY2icxylxWOG6SZAtEME
   VERCEL_ORG_ID: todds-projects-d1dca245
-  VERCEL_PROJECT_ID: faleproxy_personal
+  VERCEL_PROJECT_ID: prj_B9dtqAkOLZ65JYga60K1rTm3H1Ep
 
 jobs:
   test:
