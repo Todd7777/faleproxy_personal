@@ -78,7 +78,7 @@ The application is automatically deployed to Vercel when changes are pushed to t
 
 ### URLs
 
-- **Production**: [https://faleproxy-personal.vercel.app](https://faleproxy-personal.vercel.app)
+- **Production**: [https://faleproxypersonal.vercel.app](https://faleproxypersonal.vercel.app)
 - **Preview** (feature branches): Automatically generated for each feature branch
 
 ### Setting up Vercel Deployment
