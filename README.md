@@ -70,17 +70,25 @@ The repository includes a GitHub Actions workflow configuration in `.github/work
 1. Runs on pushes to main/master branches and on pull requests
 2. Tests the application on multiple Node.js versions (18.x, 20.x)
 3. Generates and uploads test coverage reports
-4. Automatically deploys to Vercel (when pushing to main/master)
+4. Automatically deploys to Vercel when tests pass
+
+## Deployment
+
+The application is automatically deployed to Vercel when changes are pushed to the main branch and all tests pass.
+
+### URLs
+
+- **Production**: [https://faleproxy-personal.vercel.app](https://faleproxy-personal.vercel.app)
+- **Preview** (feature branches): Automatically generated for each feature branch
 
 ### Setting up Vercel Deployment
 
-To enable automatic deployments to Vercel, you need to:
+The project uses Vercel's GitHub integration for deployments:
 
-1. Create a Vercel account and link your repository
-2. Create a Vercel project for your application
-3. Generate a Vercel token and add it as a secret in your GitHub repository:
-   - Go to Settings → Secrets → Actions
-   - Add a new secret named `VERCEL_TOKEN` with your Vercel token
+1. Vercel monitors the GitHub repository for changes
+2. When tests pass in the CI workflow, Vercel deploys the application
+3. Production deployments are created for the main branch
+4. Preview deployments are created for feature branches and pull requests
 
 ## Technologies Used
 
