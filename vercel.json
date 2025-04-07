@@ -11,5 +11,11 @@
       "src": "/(.*)",
       "dest": "/app.js"
     }
-  ]
+  ],
+  "github": {
+    "enabled": true,
+    "silent": false
+  },
+  "projectId": "faleproxy_personal",
+  "orgId": "todds-projects-d1dca245"
 }
