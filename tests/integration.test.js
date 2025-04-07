@@ -5,17 +5,25 @@ const { promisify } = require('util');
 const execAsync = promisify(exec);
 const { sampleHtmlWithYale } = require('./test-utils');
 const nock = require('nock');
+const http = require('http');
 
 // Set a different port for testing to avoid conflict with the main app
 const TEST_PORT = 3099;
 let server;
+let mockServer;
 
 describe('Integration Tests', () => {
   // Modify the app to use a test port
   beforeAll(async () => {
-    // Mock external HTTP requests
-    nock.disableNetConnect();
-    nock.enableNetConnect('127.0.0.1');
+    // Create a mock server to serve the sample HTML
+    mockServer = http.createServer((req, res) => {
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(sampleHtmlWithYale);
+    }).listen(3100);
+    
+    // Allow local connections
+    nock.cleanAll();
+    nock.enableNetConnect();
     
     // Create a temporary test app file
     await execAsync('cp app.js app.test.js');
@@ -36,20 +44,18 @@ describe('Integration Tests', () => {
     if (server && server.pid) {
       process.kill(-server.pid);
     }
+    if (mockServer) {
+      mockServer.close();
+    }
     await execAsync('rm app.test.js');
     nock.cleanAll();
     nock.enableNetConnect();
   });
 
   test('Should replace Yale with Fale in fetched content', async () => {
-    // Setup mock for example.com
-    nock('https://example.com')
-      .get('/')
-      .reply(200, sampleHtmlWithYale);
-    
-    // Make a request to our proxy app
+    // Make a request to our proxy app using our mock server
     const response = await axios.post(`http://localhost:${TEST_PORT}/fetch`, {
-      url: 'https://example.com/'
+      url: 'http://localhost:3100'
     });
     
     expect(response.status).toBe(200);
