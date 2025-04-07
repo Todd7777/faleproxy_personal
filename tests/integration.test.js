@@ -6,6 +6,8 @@ const execAsync = promisify(exec);
 const { sampleHtmlWithYale } = require('./test-utils');
 const nock = require('nock');
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
 // Set a different port for testing to avoid conflict with the main app
 const TEST_PORT = 3099;
@@ -26,30 +28,54 @@ describe('Integration Tests', () => {
     nock.enableNetConnect();
     
     // Create a temporary test app file
-    await execAsync('cp app.js app.test.js');
-    await execAsync(`sed -i '' 's/const PORT = 3001/const PORT = ${TEST_PORT}/' app.test.js`);
-    
-    // Start the test server
-    server = require('child_process').spawn('node', ['app.test.js'], {
-      detached: true,
-      stdio: 'ignore'
-    });
-    
-    // Give the server time to start
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+      // Read the original app.js
+      const appContent = fs.readFileSync(path.join(process.cwd(), 'app.js'), 'utf8');
+      
+      // Replace the port
+      const modifiedContent = appContent.replace('const PORT = 3001', `const PORT = ${TEST_PORT}`);
+      
+      // Write to a new file
+      fs.writeFileSync(path.join(process.cwd(), 'app.test.js'), modifiedContent, 'utf8');
+      
+      // Start the test server
+      server = require('child_process').spawn('node', ['app.test.js'], {
+        detached: true,
+        stdio: 'ignore'
+      });
+      
+      // Give the server time to start
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    } catch (error) {
+      console.error('Error setting up test server:', error);
+      throw error;
+    }
   }, 10000); // Increase timeout for server startup
 
   afterAll(async () => {
     // Kill the test server and clean up
     if (server && server.pid) {
-      process.kill(-server.pid);
+      try {
+        process.kill(-server.pid);
+      } catch (error) {
+        console.error('Error killing server:', error);
+      }
     }
+    
     if (mockServer) {
-      mockServer.close();
+      try {
+        mockServer.close();
+      } catch (error) {
+        console.error('Error closing mock server:', error);
+      }
     }
-    await execAsync('rm app.test.js');
-    nock.cleanAll();
-    nock.enableNetConnect();
+    
+    // Remove the test file
+    try {
+      fs.unlinkSync(path.join(process.cwd(), 'app.test.js'));
+    } catch (error) {
+      console.error('Error removing test file:', error);
+    }
   });
 
   test('Should replace Yale with Fale in fetched content', async () => {
