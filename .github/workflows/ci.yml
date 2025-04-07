@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ main, master ]
 
+env:
+  VERCEL_TOKEN: 7qKvvY2icxylxWOG6SZAtEME
+  VERCEL_ORG_ID: todds-projects-d1dca245
+  VERCEL_PROJECT_ID: faleproxy_personal
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -43,13 +48,17 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Deploy to Vercel (Preview)
-      uses: amondnet/vercel-action@v20
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
       with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: todds-projects-d1dca245
-        vercel-project-id: faleproxy_personal
-        scope: todds-projects-d1dca245
+        node-version: '18.x'
+        
+    - name: Install Vercel CLI
+      run: npm install --global vercel@latest
+      
+    - name: Deploy to Vercel (Preview)
+      run: |
+        vercel deploy --token=$VERCEL_TOKEN --scope=$VERCEL_ORG_ID --confirm
         
   production-deploy:
     needs: test
@@ -59,11 +68,14 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Deploy to Vercel (Production)
-      uses: amondnet/vercel-action@v20
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
       with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: todds-projects-d1dca245
-        vercel-project-id: faleproxy_personal
-        scope: todds-projects-d1dca245
-        vercel-args: '--prod'
+        node-version: '18.x'
+        
+    - name: Install Vercel CLI
+      run: npm install --global vercel@latest
+      
+    - name: Deploy to Vercel (Production)
+      run: |
+        vercel deploy --token=$VERCEL_TOKEN --scope=$VERCEL_ORG_ID --prod --confirm
